@@ -27,30 +27,41 @@
 
 
 /*------------------------------------------------------------------*/
-/* LED
- *------------------------------------------------------------------*/
-#define LEDS_NUMBER           2
-#define LED_PRIMARY_PIN       PINNUM(1, 15)
-#define LED_SECONDARY_PIN     PINNUM(1, 10)
-#define LED_STATE_ON          1
+/* LED                                                              */
+/*------------------------------------------------------------------*/
+#define LEDS_NUMBER           0
+//#define LED_PRIMARY_PIN       PINNUM(1, 15)
+//#define LED_SECONDARY_PIN     PINNUM(1, 10)
+//#define LED_STATE_ON          1
 
-#define LED_NEOPIXEL          PINNUM(0, 16)
-#define NEOPIXEL_POWER_PIN    PINNUM(1, 14)
-#define NEOPIXELS_NUMBER      1
-#define BOARD_RGB_BRIGHTNESS  0x040404
+//#define LED_NEOPIXEL          PINNUM(0, 16)
+//#define NEOPIXEL_POWER_PIN    PINNUM(1, 14)
+#define NEOPIXELS_NUMBER      0
+//#define BOARD_RGB_BRIGHTNESS  0x040404
 
 /*------------------------------------------------------------------*/
-/* BUTTON
- *------------------------------------------------------------------*/
+/* BUTTON                                                           */
+/*------------------------------------------------------------------*/
 #define BUTTON_DFU     PINNUM(1, 02)
-#define BUTTON_DFU_OTA PINNUM(0, 10)
+#define BUTTON_DFU_OTA PINNUM(0, 24)
 #define BUTTON_PULL           NRF_GPIO_PIN_PULLUP
 
 //--------------------------------------------------------------------+
 // BLE OTA
 //--------------------------------------------------------------------+
-#define BLEDIS_MANUFACTURER   "Adafruit Industries"
+#define BLEDIS_MANUFACTURER   "Mytest3_OTA"
 #define BLEDIS_MODEL          "Feather nRF52840 Express"
+
+/*------------------------------------------------------------------*/
+/* QSPI                                                           */
+/*------------------------------------------------------------------*/
+#define QSPI_PIN_CS      PINNUM(0, 20)
+#define QSPI_PIN_SCK     PINNUM(0, 19)
+#define QSPI_PIN_IO0     PINNUM(0, 17)
+#define QSPI_PIN_IO1     PINNUM(0, 22)
+#define QSPI_PIN_IO2     PINNUM(0, 23)
+#define QSPI_PIN_IO3     PINNUM(0, 21)
+
 
 //--------------------------------------------------------------------+
 // USB
