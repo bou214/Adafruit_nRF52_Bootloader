@@ -55,9 +55,45 @@ jobs:
       run: |
         pip3 install adafruit-nrfutil uritemplate requests intelhex setuptools
 
+    # 💡 【重要】ビルドする前に、特定のボード（feather_nrf52840_expressなど）の board.h を上書きします。
+    - name: Customize board.h
+      if: matrix.board == 'feather_nrf52840_express'
+      run: |
+        cat << 'EOF' > src/boards/feather_nrf52840_express/board.h
+        /* ========================================================================== */
+        /* 💡 ここに、あなたオリジナルの board.h の中身を丸ごと貼り付けてください！       */
+        /* ========================================================================== */
+        #ifndef _FEATHER_NRF52840_EXPRESS_H
+        #define _FEATHER_NRF52840_EXPRESS_H
+
+        #define BUTTON_PIN   7
+        #define LED_PIN      13
+        // ...（お持ちのオリジナルのコードをここにすべて貼り付けます）...
+
+        #endif
+        EOF
+
     - name: Build
       run: |
-        # 💡 env（環境変数）ではなく、makeの引数として「MK_BOOTLOADER_VERSION=0」を直接渡します。
-        # これにより、Makefile内部で実行される git describe などの自動生成ロジックを強制的に上書き（オーバライド）します。
-        make BOARD=${{ matrix.board }} MK_BOOTLOADER_VERSION=0 all
-        make BOARD=${{ matrix.board }} MK_BOOTLOADER_VERSION=0 copy-artifact
+        # 前回のGitハッシュエラーを防ぐハック
+        git() {
+          echo "0"
+        }
+        export -f git
+
+        make BOARD=${{ matrix.board }} all
+        make BOARD=${{ matrix.board }} copy-artifact
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.board }}
+        path: _bin/${{ matrix.board }}
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      if: ${{ github.event_name == 'release' }}
+      with:
+        files: |
+          _bin/${{ matrix.board }}/${{ matrix.board }}_bootloader-*.zip
+          _bin/${{ matrix.board }}/${{ matrix.board }}_bootloader-*.hex
+          _bin/${{ matrix.board }}/update-${{ matrix.board }}_bootloader-*.uf2
