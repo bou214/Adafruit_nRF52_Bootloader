@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 💡 念のためマトリックス生成側でも全ての履歴を取得します
+          fetch-depth: 0
 
       - name: Set matrix
         id: set-matrix
@@ -57,12 +57,13 @@ jobs:
 
     - name: Build
       run: |
-        # 💡 エラーの原因となるマクロ「MK_BOOTLOADER_VERSION」を、Cコンパイラが誤解しないよう文字列として強制上書きします。
-        # 単純な数字、または確実にエスケープされた文字列にすることで「exponent has no digits」を防ぎます。
         make BOARD=${{ matrix.board }} all
         make BOARD=${{ matrix.board }} copy-artifact
       env:
-        MK_BOOTLOADER_VERSION: "0.0.0-ci" # 💡 ここで安全な文字列を環境変数として注入してエラーを回避します
+        # 💡 C言語のレジスタ（数値）に直接代入できるよう、16進数の数値を強制指定します。
+        # これにより Makefile 内の Git ハッシュ自動取得によるエラー（invalid suffix や exponent）を完全に回避します。
+        VERSION: "0x0000"
+        MK_BOOTLOADER_VERSION: "0x0000"
 
     - uses: actions/upload-artifact@v4
       with:
