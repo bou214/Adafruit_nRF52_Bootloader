@@ -57,24 +57,7 @@ jobs:
 
     - name: Build
       run: |
-        make BOARD=${{ matrix.board }} all
-        make BOARD=${{ matrix.board }} copy-artifact
-      env:
-        # 💡 C言語のレジスタ（数値）に直接代入できるよう、16進数の数値を強制指定します。
-        # これにより Makefile 内の Git ハッシュ自動取得によるエラー（invalid suffix や exponent）を完全に回避します。
-        VERSION: "0x0000"
-        MK_BOOTLOADER_VERSION: "0x0000"
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.board }}
-        path: _bin/${{ matrix.board }}
-
-    - name: Upload Release Asset
-      uses: softprops/action-gh-release@v1
-      if: ${{ github.event_name == 'release' }}
-      with:
-        files: |
-          _bin/${{ matrix.board }}/${{ matrix.board }}_bootloader-*.zip
-          _bin/${{ matrix.board }}/${{ matrix.board }}_bootloader-*.hex
-          _bin/${{ matrix.board }}/update-${{ matrix.board }}_bootloader-*.uf2
+        # 💡 env（環境変数）ではなく、makeの引数として「MK_BOOTLOADER_VERSION=0」を直接渡します。
+        # これにより、Makefile内部で実行される git describe などの自動生成ロジックを強制的に上書き（オーバライド）します。
+        make BOARD=${{ matrix.board }} MK_BOOTLOADER_VERSION=0 all
+        make BOARD=${{ matrix.board }} MK_BOOTLOADER_VERSION=0 copy-artifact
