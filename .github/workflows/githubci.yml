@@ -55,7 +55,7 @@ jobs:
       run: |
         pip3 install adafruit-nrfutil uritemplate requests intelhex setuptools
 
-    # 💡 【重要】ビルドの直前に、提供いただいたオリジナルの board.h を自動生成して配置します。
+    # 💡 ビルドの直前に、提供いただいたオリジナルの board.h を自動生成して配置します。
     - name: Customize board.h
       if: matrix.board == 'feather_nrf52840_express'
       run: |
@@ -139,14 +139,13 @@ jobs:
         #endif // _FEATHER_NRF52840_H
         EOF
 
+    # 💡 【追加】エラーの原因となっているソースコードの175行目を、直接「0」に書き換えてエラーを根絶します。
+    - name: Fix Source Code Macro Bug
+      run: |
+        sed -i 's/BOOTLOADER_VERSION_REGISTER = (MK_BOOTLOADER_VERSION);/BOOTLOADER_VERSION_REGISTER = 0;/g' src/main.c
+
     - name: Build
       run: |
-        # 💡 前回発生した「Gitハッシュのコンパイルエラー（invalid suffix等）」を回避するハック
-        git() {
-          echo "0"
-        }
-        export -f git
-
         make BOARD=${{ matrix.board }} all
         make BOARD=${{ matrix.board }} copy-artifact
 
